@@ -62,8 +62,17 @@ function shuffle(arr) {
   return a;
 }
 
+function randomizeOptions(q) {
+  const originalAnswer = q.answer;
+  const indices = q.options.map((_, i) => i);
+  const shuffledIndices = shuffle(indices);
+  const options = shuffledIndices.map(i => q.options[i]);
+  const answer = shuffledIndices.indexOf(originalAnswer);
+  return { ...q, options, answer };
+}
+
 function pickQuestions(n) {
-  return shuffle(QUESTION_BANK).slice(0, n);
+  return shuffle(QUESTION_BANK).slice(0, n).map(randomizeOptions);
 }
 
 function send(ws, msg) {
