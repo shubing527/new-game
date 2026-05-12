@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>電解質益智擂台 — 多人連線問答</title>
+  <meta name="description" content="3 人連線的電解質知識問答秀，輸入房間密碼即可加入同一場比賽。" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,600,700,900&f[]=clash-display@600,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23F5C947'/><text x='50%25' y='58%25' font-size='20' font-weight='800' text-anchor='middle' font-family='sans-serif' fill='%231a3b5d'>Q</text></svg>" />
+</head>
+<body>
+  <!-- ============== START / LOBBY SCREEN ============== -->
+  <section id="screen-start" class="screen show">
+    <div class="start-shell">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-label="Electrolyte Quiz logo">
+          <defs>
+            <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F5C947"/>
+              <stop offset="1" stop-color="#F08A3C"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg)"/>
+          <path d="M20 18 L36 18 L26 30 L36 30 L18 50 L24 34 L14 34 Z" fill="#1a3b5d" />
+          <circle cx="46" cy="46" r="6" fill="#1a3b5d"/>
+          <circle cx="46" cy="46" r="2.4" fill="#F5C947"/>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-eyebrow">ELECTROLYTE QUIZ SHOW</div>
+          <h1 class="brand-title">電解質益智擂台</h1>
+          <p class="brand-sub">三人連線・20 題搶答・最高分登上頒獎台</p>
+        </div>
+      </div>
+
+      <form id="join-form" class="card join-card" novalidate>
+        <label class="field">
+          <span class="field-label">房間密碼</span>
+          <input id="input-room" data-testid="input-room" name="room"
+                 inputmode="text" autocomplete="off" spellcheck="false"
+                 autocapitalize="characters"
+                 maxlength="16" placeholder="例如 ION88" required />
+          <span class="field-help">不存在會自動建立。最多 3 人同房。</span>
+        </label>
+        <label class="field">
+          <span class="field-label">顯示名稱（可留空）</span>
+          <input id="input-name" data-testid="input-name" name="name"
+                 inputmode="text" autocapitalize="words" autocomplete="nickname"
+                 maxlength="20" placeholder="留空則自動命名為「玩家 1/2/3」" />
+        </label>
+        <button id="btn-join" data-testid="button-join" type="submit" class="btn btn-primary">
+          <span>進入房間</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="join-error" class="error" role="alert" aria-live="polite"></div>
+      </form>
+
+      <ul class="rules">
+        <li><strong>規則</strong>　20 題隨機題目，每題 20 秒</li>
+        <li><strong>計分</strong>　答對 +5 分，答錯不扣分</li>
+        <li><strong>勝負</strong>　最高分者站上 1 號台，並列同名次</li>
+      </ul>
+      <p class="footnote">題庫改編自《Chemistry LibreTexts》與《Siyavula Grade 10 Physical Sciences》。</p>
+    </div>
+  </section>
+
+  <!-- ============== STAGE / GAME SCREEN ============== -->
+  <section id="screen-stage" class="screen">
+    <header class="stage-topbar">
+      <div class="topbar-left">
+        <div class="room-pill" data-testid="text-room-code">房間 <span id="lbl-room">—</span></div>
+        <div class="phase-pill" id="phase-pill" data-testid="text-phase">等待中</div>
+      </div>
+      <div class="topbar-center">
+        <div class="qcounter">第 <b id="lbl-qindex">0</b> / <span id="lbl-qtotal">20</span> 題</div>
+      </div>
+      <div class="topbar-right">
+        <div id="timer" class="timer" data-testid="text-timer">--</div>
+      </div>
+    </header>
+
+    <main class="stage" aria-label="比賽舞台">
+      <!-- Background layers -->
+      <div class="curtain"></div>
+      <div class="spotlights">
+        <span class="spot s1"></span><span class="spot s2"></span><span class="spot s3"></span>
+      </div>
+      <div class="stage-floor"></div>
+
+      <!-- Host (left) -->
+      <div class="host" aria-hidden="true">
+        <svg viewBox="0 0 140 240" width="140" height="240">
+          <!-- legs -->
+          <rect x="55" y="160" width="14" height="60" rx="4" fill="#1f2a44"/>
+          <rect x="73" y="160" width="14" height="60" rx="4" fill="#1f2a44"/>
+          <!-- shoes -->
+          <ellipse cx="60" cy="225" rx="14" ry="6" fill="#0d1422"/>
+          <ellipse cx="80" cy="225" rx="14" ry="6" fill="#0d1422"/>
+          <!-- suit -->
+          <path d="M30 95 Q70 85 110 95 L116 165 L24 165 Z" fill="#2a3a5c"/>
+          <path d="M70 95 L70 165" stroke="#1a2540" stroke-width="2"/>
+          <!-- shirt + tie -->
+          <path d="M58 95 L70 110 L82 95 L82 130 L58 130 Z" fill="#f4f7fb"/>
+          <path d="M67 110 L73 110 L76 145 L70 152 L64 145 Z" fill="#d33b3b"/>
+          <!-- arms -->
+          <path d="M30 95 L18 150 L34 158 L44 110 Z" fill="#2a3a5c"/>
+          <path d="M110 95 L122 150 L106 160 L96 110 Z" fill="#2a3a5c"/>
+          <!-- clipboard -->
+          <rect x="6" y="138" width="34" height="44" rx="3" fill="#e9c46a" stroke="#a87b1c" stroke-width="2"/>
+          <rect x="14" y="134" width="18" height="8" rx="2" fill="#a87b1c"/>
+          <line x1="11" y1="150" x2="35" y2="150" stroke="#a87b1c" stroke-width="1.5"/>
+          <line x1="11" y1="158" x2="35" y2="158" stroke="#a87b1c" stroke-width="1.5"/>
+          <line x1="11" y1="166" x2="29" y2="166" stroke="#a87b1c" stroke-width="1.5"/>
+          <!-- head -->
+          <circle cx="70" cy="65" r="26" fill="#f1c8a6"/>
+          <!-- hair -->
+          <path d="M44 60 Q44 38 70 36 Q96 38 96 60 Q92 50 70 50 Q48 50 44 60 Z" fill="#2a2017"/>
+          <!-- eyes -->
+          <circle cx="60" cy="64" r="2" fill="#1a1a1a"/>
+          <circle cx="80" cy="64" r="2" fill="#1a1a1a"/>
+          <!-- smile -->
+          <path d="M60 76 Q70 82 80 76" stroke="#7a3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- beard -->
+          <path d="M50 70 Q70 92 90 70 Q88 88 70 92 Q52 88 50 70 Z" fill="#3a2c1f" opacity="0.5"/>
+          <!-- pointing arm -->
+          <path d="M105 105 Q150 115 162 130" stroke="#2a3a5c" stroke-width="14" fill="none" stroke-linecap="round"/>
+          <circle cx="162" cy="130" r="9" fill="#f1c8a6"/>
+          <path d="M162 128 L182 128" stroke="#f1c8a6" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <!-- Blackboard with question -->
+      <div class="blackboard" id="blackboard" aria-live="polite">
+        <div class="blackboard-frame">
+          <div class="blackboard-bulbs"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="blackboard-inner">
+            <div class="bb-category" id="bb-category">準備好了嗎？</div>
+            <div class="bb-scenario" id="bb-scenario">輸入相同房間密碼，最多三人同台搶答。</div>
+            <div class="bb-question" id="bb-question">房主按「開始遊戲」即可發題。</div>
+            <ul class="bb-options" id="bb-options" role="list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Three podiums -->
+      <div class="podiums" id="podiums" role="list">
+        <!-- filled by JS -->
+      </div>
+
+      <!-- Lobby waiting panel / host controls overlay -->
+      <div id="lobby-panel" class="lobby-panel">
+        <div class="lp-card">
+          <div class="lp-title">等待玩家入場</div>
+          <div class="lp-sub">分享房間密碼 <b id="lp-code">—</b> 給朋友，最多 3 人</div>
+          <div class="lp-actions">
+            <button id="btn-start" data-testid="button-start" class="btn btn-go" disabled>開始遊戲</button>
+            <button id="btn-leave" data-testid="button-leave" class="btn btn-ghost">離開房間</button>
+          </div>
+          <div class="lp-hint" id="lp-hint">只有房主可開始</div>
+        </div>
+      </div>
+
+      <!-- Reveal toast -->
+      <div id="reveal-banner" class="reveal-banner" role="status" aria-live="polite"></div>
+
+      <!-- Final podium overlay -->
+      <div id="final-screen" class="final-screen">
+        <canvas id="confetti"></canvas>
+        <div class="final-card">
+          <h2 class="final-title">頒獎時刻</h2>
+          <ol id="final-podium" class="final-podium"></ol>
+          <div class="final-actions">
+            <button id="btn-restart" data-testid="button-restart" class="btn btn-primary">再來一場</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Buzzer answer buttons -->
+    <footer class="answer-bar" id="answer-bar" aria-label="作答按鈕">
+      <button class="ans" data-letter="A" data-testid="button-answer-A" disabled>
+        <span class="ans-letter">A</span><span class="ans-text" data-bind="A">—</span>
+      </button>
+      <button class="ans" data-letter="B" data-testid="button-answer-B" disabled>
+        <span class="ans-letter">B</span><span class="ans-text" data-bind="B">—</span>
+      </button>
+      <button class="ans" data-letter="C" data-testid="button-answer-C" disabled>
+        <span class="ans-letter">C</span><span class="ans-text" data-bind="C">—</span>
+      </button>
+      <button class="ans" data-letter="D" data-testid="button-answer-D" disabled>
+        <span class="ans-letter">D</span><span class="ans-text" data-bind="D">—</span>
+      </button>
+    </footer>
+
+    <div id="conn-status" class="conn-status" data-testid="text-connection">連線中…</div>
+  </section>
+
+  <script src="./app.js"></script>
+</body>
+</html>
