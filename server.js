@@ -16,6 +16,7 @@
  *   { type:'state', room:{...} }              // full room state broadcast
  *   { type:'question', index, total, scenario, question, options, deadlineTs }
  *   { type:'answered', seat }                 // someone locked an answer
+ *   { type:'result', choice, correct, correctIndex, explanation } // personal, only to the answerer
  *   { type:'reveal', correct:0..3, explanation, scores, perPlayer:[{seat,choice,correct}] }
  *   { type:'final', ranking:[{seat,name,score,rank}] }
  *   { type:'error', code, message }
@@ -344,6 +345,16 @@ function handleAnswer(ws, msg) {
   if (ws.player.currentChoice !== null) return; // locked
   ws.player.currentChoice = choice;
   ws.player.lockedAt = Date.now();
+  // Personal immediate feedback (authoritative judgment, no score change here)
+  const q = room.questions[room.questionIndex];
+  if (q) {
+    send(ws, {
+      type: 'result',
+      choice,
+      correct: choice === q.answer,
+      correctIndex: q.answer,
+    });
+  }
   broadcast(room, { type: 'answered', seat: ws.player.seat });
   broadcastState(room);
   maybeResolveEarly(room);

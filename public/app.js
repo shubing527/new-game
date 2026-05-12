@@ -47,6 +47,17 @@
   let revealTimeout = null;
   let reconnectAttempts = 0;
   let confettiAnim = null;
+  let myChoice = null; // local: chosen index for current question
+  let myResult = null; // local: { correct, correctIndex } once server replies
+
+  // Lightweight perf flag: reduce motion on small screens and when user requests it.
+  const LOW_MOTION = (() => {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
+    } catch (_) {}
+    return Math.min(window.innerWidth || 1024, window.innerHeight || 768) <= 768;
+  })();
+  if (LOW_MOTION) document.documentElement.classList.add('low-motion');
 
   // ---------------- WebSocket ----------------
   function wsUrl() {
@@ -107,6 +118,7 @@
       case 'state': onState(msg.room); break;
       case 'question': onQuestion(msg); break;
       case 'answered': onAnswered(msg.seat); break;
+      case 'result': onResult(msg); break;
       case 'reveal': onReveal(msg); break;
       case 'final': onFinal(msg); break;
       case 'error': onError(msg); break;
@@ -161,6 +173,8 @@
   function onQuestion(q) {
     currentQuestion = q;
     questionDeadline = q.deadlineTs;
+    myChoice = null;
+    myResult = null;
     hideFinal();
     showLobby(false);
     bbCategory.textContent = q.category || '電解質知識';
@@ -189,7 +203,7 @@
   }
 
   function onAnswered(seat) {
-    // Mark a podium as locked
+    // Neutral "已作答" label — does NOT imply correctness for anyone.
     const pod = podiumsEl.querySelector(`[data-seat="${seat}"]`);
     if (pod) {
       const state = pod.querySelector('.pod-state');
@@ -197,6 +211,39 @@
       state.classList.remove('correct','wrong');
       state.classList.add('locked','show');
     }
+  }
+
+  function onResult(msg) {
+    // Server's authoritative judgment for THIS player only.
+    myResult = { correct: !!msg.correct, correctIndex: msg.correctIndex };
+    // Disable buzzers (already disabled locally on click, reinforce here)
+    ansButtons.forEach(b => { b.disabled = true; });
+    // Mark the player's chosen buzzer correct/wrong immediately.
+    if (myChoice != null) {
+      const btn = ansButtons[myChoice];
+      if (btn) {
+        btn.classList.remove('is-locked');
+        btn.classList.add(msg.correct ? 'is-correct' : 'is-wrong');
+      }
+    }
+    // Update own podium label to personal result.
+    if (me) {
+      const pod = podiumsEl.querySelector(`[data-seat="${me.seat}"]`);
+      if (pod) {
+        const state = pod.querySelector('.pod-state');
+        state.classList.remove('locked');
+        if (msg.correct) {
+          state.textContent = '答對';
+          state.classList.remove('wrong');
+          state.classList.add('correct','show');
+        } else {
+          state.textContent = '答錯';
+          state.classList.remove('correct');
+          state.classList.add('wrong','show');
+        }
+      }
+    }
+    flashBanner(msg.correct ? '答對了！等待其他人…' : '答錯了，等待結算…', msg.correct ? 'good' : 'bad', 1800);
   }
 
   function onReveal(msg) {
@@ -207,13 +254,17 @@
       if (i === msg.correct) li.classList.add('is-correct');
       else li.classList.add('is-wrong');
     });
-    // Update buzzer states for self
+    // Update buzzer states for self — clear any pending state first.
     if (me) {
       const myInfo = msg.perPlayer.find(p => p.seat === me.seat);
       ansButtons.forEach((b, i) => {
         b.disabled = true;
+        b.classList.remove('is-pending','is-locked');
         if (i === msg.correct) b.classList.add('is-correct');
-        if (myInfo && myInfo.choice === i && !myInfo.correct) b.classList.add('is-wrong');
+        if (myInfo && myInfo.choice === i && !myInfo.correct) {
+          b.classList.remove('is-correct');
+          b.classList.add('is-wrong');
+        }
       });
     }
     // Update pod-state per player
@@ -437,7 +488,7 @@
     function resize() { confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
     resize(); window.addEventListener('resize', resize);
     const colors = ['#f5c947','#5dd483','#6cb7e9','#f08a3c','#e15a4f','#ffffff'];
-    const N = 140;
+    const N = LOW_MOTION ? 50 : 140;
     const parts = [];
     for (let i = 0; i < N; i++) {
       parts.push({
@@ -498,9 +549,11 @@
       const letter = b.dataset.letter;
       const choice = ['A','B','C','D'].indexOf(letter);
       if (choice < 0) return;
-      // Lock locally immediately
+      // Lock locally immediately. Neutral pending visual — we don't know yet
+      // if it's correct; the server reply (type 'result') decides.
       ansButtons.forEach(o => o.disabled = true);
-      b.classList.add('is-locked');
+      b.classList.add('is-pending');
+      myChoice = choice;
       send({ type: 'answer', choice });
     });
   });
