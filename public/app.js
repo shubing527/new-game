@@ -569,6 +569,40 @@
     showScreen('start');
   });
 
+  // ---------------- Review modal (溫習) ----------------
+  const reviewModal = $('#review-modal');
+  const btnReview = $('#btn-review');
+  let reviewPrevFocus = null;
+  function openReview() {
+    if (!reviewModal) return;
+    reviewPrevFocus = document.activeElement;
+    reviewModal.classList.add('show');
+    reviewModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    const closer = reviewModal.querySelector('.review-close');
+    if (closer) closer.focus();
+  }
+  function closeReview() {
+    if (!reviewModal) return;
+    reviewModal.classList.remove('show');
+    reviewModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (reviewPrevFocus && typeof reviewPrevFocus.focus === 'function') {
+      reviewPrevFocus.focus();
+    }
+  }
+  if (btnReview) btnReview.addEventListener('click', openReview);
+  if (reviewModal) {
+    reviewModal.querySelectorAll('[data-review-close]').forEach((el) => {
+      el.addEventListener('click', closeReview);
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && reviewModal && reviewModal.classList.contains('show')) {
+      closeReview();
+    }
+  });
+
   // Auto-uppercase room input
   inputRoom.addEventListener('input', () => {
     const v = inputRoom.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '');

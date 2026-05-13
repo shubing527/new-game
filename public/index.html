@@ -49,10 +49,16 @@
                  inputmode="text" autocapitalize="words" autocomplete="nickname"
                  maxlength="20" placeholder="留空則自動命名為「玩家 1/2/3」" />
         </label>
-        <button id="btn-join" data-testid="button-join" type="submit" class="btn btn-primary">
-          <span>進入房間</span>
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+        <div class="join-actions">
+          <button id="btn-join" data-testid="button-join" type="submit" class="btn btn-primary">
+            <span>進入房間</span>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button id="btn-review" data-testid="button-review" type="button" class="btn btn-review">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z M14 3v6h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg>
+            <span>溫習</span>
+          </button>
+        </div>
         <div id="join-error" class="error" role="alert" aria-live="polite"></div>
       </form>
 
@@ -62,6 +68,154 @@
         <li><strong>勝負</strong>　最高分者站上 1 號台，並列同名次</li>
       </ul>
       <p class="footnote">題庫改編自《Chemistry LibreTexts》與《Siyavula Grade 10 Physical Sciences》。</p>
+    </div>
+
+    <!-- ============== REVIEW MODAL (溫習) ============== -->
+    <div id="review-modal" class="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-title" aria-hidden="true">
+      <div class="review-backdrop" data-review-close></div>
+      <div class="review-shell" role="document">
+        <header class="review-header">
+          <h2 id="review-title" class="review-title">溫習：電解質與水溶液導電</h2>
+          <button type="button" class="review-close" data-review-close aria-label="關閉溫習">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
+        </header>
+        <p class="review-lead">本份重點直接對應 50 題題庫，建議先讀概念，再看「對應題型」核對自己會不會。</p>
+
+        <nav class="review-toc" aria-label="章節跳轉">
+          <a href="#rv-define">① 定義</a>
+          <a href="#rv-types">② 強/弱/非</a>
+          <a href="#rv-abs">③ 酸鹼鹽</a>
+          <a href="#rv-life">④ 生活水溶液</a>
+          <a href="#rv-state">⑤ 固體與熔融</a>
+          <a href="#rv-factor">⑥ 影響因素</a>
+          <a href="#rv-apply">⑦ 應用與安全</a>
+          <a href="#rv-myth">⑧ 常見迷思</a>
+          <a href="#rv-types-q">⑨ 對應題型</a>
+        </nav>
+
+        <article class="review-body">
+          <section id="rv-define" class="rv-card">
+            <h3>① 核心定義</h3>
+            <ul>
+              <li><b>電解質</b>：在<b>水溶液中</b>或<b>熔融狀態</b>下能解離出可自由移動的<b>離子</b>，使溶液能導電的物質。</li>
+              <li>導電的本質：陰陽離子分別向相反電極移動形成電流，<b>並非水分子本身在導電</b>。</li>
+              <li>純水導電性極差；自來水可導電是因為含有微量礦物質離子。</li>
+              <li>固態的離子化合物（例如固體 NaCl）雖然有離子，但離子被晶格鎖住<b>不能移動</b>，所以不導電。</li>
+            </ul>
+          </section>
+
+          <section id="rv-types" class="rv-card">
+            <h3>② 強電解質 / 弱電解質 / 非電解質</h3>
+            <table class="rv-table">
+              <thead><tr><th>類別</th><th>解離程度</th><th>常見例子</th></tr></thead>
+              <tbody>
+                <tr><td>強電解質</td><td>幾乎完全解離</td><td>NaCl、KCl、HCl、HNO₃、H₂SO₄、NaOH、KOH</td></tr>
+                <tr><td>弱電解質</td><td>只有少部分解離</td><td>醋酸 (CH₃COOH)、檸檬酸、氨水 (NH₃·H₂O)、碳酸 (H₂CO₃)</td></tr>
+                <tr><td>非電解質</td><td>幾乎不解離</td><td>糖（蔗糖、葡萄糖）、酒精（乙醇）、油類、純水、丙酮</td></tr>
+              </tbody>
+            </table>
+            <p class="rv-tip">小訣竅：能拆成「正離子＋負離子」的，幾乎都會導電；只是「整顆分子溶解」的（如糖、酒精），通常不導電。</p>
+          </section>
+
+          <section id="rv-abs" class="rv-card">
+            <h3>③ 酸、鹼、鹽各舉幾個</h3>
+            <ul>
+              <li><b>強酸</b>：鹽酸 HCl、硫酸 H₂SO₄、硝酸 HNO₃。</li>
+              <li><b>弱酸</b>：醋酸、碳酸、檸檬酸（檸檬汁酸味來源）。</li>
+              <li><b>強鹼</b>：氫氧化鈉 NaOH、氫氧化鉀 KOH。</li>
+              <li><b>弱鹼</b>：氨水 NH₃·H₂O、小蘇打水 (NaHCO₃ 偏弱鹼性，本身是鹽類)。</li>
+              <li><b>鹽類</b>：NaCl、KCl、CaCl₂、NaHCO₃、Na₂SO₄ — 溶於水大多是<b>強電解質</b>。</li>
+              <li>酸＋鹼<b>中和</b>會生成鹽＋水，例如 HCl + NaOH → NaCl + H₂O，溶液中仍有 Na⁺、Cl⁻ 故仍可導電。</li>
+            </ul>
+          </section>
+
+          <section id="rv-life" class="rv-card">
+            <h3>④ 生活中的水溶液：會不會導電？</h3>
+            <table class="rv-table">
+              <thead><tr><th>溶液</th><th>導電？</th><th>原因</th></tr></thead>
+              <tbody>
+                <tr><td>食鹽水 / 海水</td><td class="rv-yes">會</td><td>Na⁺、Cl⁻ 完全解離；海水離子濃度高，導電性更強</td></tr>
+                <tr><td>運動飲料 / 口服電解質液 (ORS)</td><td class="rv-yes">會</td><td>含 Na⁺、K⁺、Cl⁻ 等電解質補充流失</td></tr>
+                <tr><td>自來水</td><td class="rv-yes">會（弱）</td><td>含微量礦物質離子</td></tr>
+                <tr><td>食醋 / 檸檬汁</td><td class="rv-yes">會（弱）</td><td>弱酸只部分解離，導電性比鹽水弱</td></tr>
+                <tr><td>小蘇打水</td><td class="rv-yes">會</td><td>NaHCO₃ 是鹽類，解離出 Na⁺、HCO₃⁻</td></tr>
+                <tr><td>汗水 / 體液</td><td class="rv-yes">會</td><td>含 Na⁺、K⁺、Cl⁻ 等</td></tr>
+                <tr><td>洗潔劑 / 肥皂水</td><td class="rv-maybe">通常會</td><td>含離子型界面活性劑與電解質；純非離子型則弱</td></tr>
+                <tr><td>糖水 / 蔗糖溶液</td><td class="rv-no">不會</td><td>糖分子整顆溶解，不解離出離子</td></tr>
+                <tr><td>酒精（乙醇）/ 酒精消毒液</td><td class="rv-no">不會</td><td>乙醇是非電解質</td></tr>
+                <tr><td>食用油 / 礦物油</td><td class="rv-no">不會</td><td>非極性、不解離，也不溶於水</td></tr>
+                <tr><td>蒸餾水 / 純水</td><td class="rv-no">幾乎不會</td><td>幾乎沒有離子</td></tr>
+                <tr><td>雨水</td><td class="rv-maybe">很弱</td><td>溶有微量 CO₂、SO₂ 等，導電性接近純水</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="rv-state" class="rv-card">
+            <h3>⑤ 固體、水溶液與熔融狀態</h3>
+            <ul>
+              <li><b>固體 NaCl</b>：離子被鎖在晶格中 → <b>不導電</b>。</li>
+              <li><b>NaCl 水溶液</b>：解離成 Na⁺(aq)、Cl⁻(aq) → <b>能導電</b>。</li>
+              <li><b>熔融 NaCl</b>：高溫熔成液體後離子可自由移動 → <b>能導電</b>（電解工業常見）。</li>
+              <li>把食鹽倒入水中是<b>物理性溶解</b>，水分子的極性把 Na⁺、Cl⁻ 拉開（水合）。</li>
+              <li>冰塊本身（即使原本是鹽水結成）導電性極差，因為離子又被固定住了。</li>
+            </ul>
+          </section>
+
+          <section id="rv-factor" class="rv-card">
+            <h3>⑥ 影響導電性強弱的因素</h3>
+            <ul>
+              <li><b>離子濃度</b>：濃度越高，可移動的離子越多 → 導電性越強（到飽和前）。</li>
+              <li><b>溫度</b>：溫度升高，離子運動更快、解離更完全 → 導電性通常變強。</li>
+              <li><b>離子種類與電荷</b>：電荷數越大、遷移率越高的離子貢獻越大。</li>
+              <li><b>強電解質 vs 弱電解質</b>：同濃度下強電解質導電性遠大於弱電解質。</li>
+              <li>把糖加進鹽水裡，鹽水的導電性<b>幾乎不變</b>（糖不解離）。</li>
+            </ul>
+          </section>
+
+          <section id="rv-apply" class="rv-card">
+            <h3>⑦ 應用與安全</h3>
+            <ul>
+              <li><b>電池</b>：內部使用電解質（液態、膠態或固態）讓離子在正負極之間搬運電荷。</li>
+              <li><b>電鍍 / 電解</b>：在電解質溶液中通電，使金屬離子在電極上還原成金屬層；電解水也需加少量電解質才導電。</li>
+              <li><b>導電度計 / TDS 計</b>：量測水中可溶解固體（離子）含量，數值越高代表離子越多。</li>
+              <li><b>醫學</b>：腹瀉脫水時要補充電解質（ORS）；只喝純水反而稀釋體內鈉離子。</li>
+              <li><b>安全</b>：潮濕又有鹽分的表面（汗手、潮濕地板）導電性大增，<b>絕對不要在這種狀態下碰電器或插座</b>。</li>
+            </ul>
+          </section>
+
+          <section id="rv-myth" class="rv-card">
+            <h3>⑧ 題目常見的「誤解澄清」</h3>
+            <ul>
+              <li>「液體就會導電」❌ — 油、酒精、糖水都是液體但不導電。</li>
+              <li>「透明溶液一定不導電」❌ — 食鹽水、稀鹽酸都透明，但是強電解質。</li>
+              <li>「有機物都是非電解質」❌ — 醋酸、檸檬酸是有機物但是弱電解質。</li>
+              <li>「水自己會導電」❌ — 純水導電性極弱，導電的是溶在水中的離子。</li>
+              <li>「糖水加鹽不會變化」❌ — 加鹽會大幅提高導電性，糖則沒貢獻。</li>
+              <li>「鹽固體會導電」❌ — 固體不導電，要「溶於水」或「熔融」才行。</li>
+            </ul>
+          </section>
+
+          <section id="rv-types-q" class="rv-card">
+            <h3>⑨ 對應題型（常見考法）</h3>
+            <ol>
+              <li><b>定義題</b>：哪一個敘述最能描述「電解質」？— 對應第 1、2 題。</li>
+              <li><b>分類題</b>：把 NaCl、糖、醋酸、NaOH 分到強/弱/非電解質。— 對應第 3–8 題。</li>
+              <li><b>生活情境</b>：拿燈泡電路測哪杯液體會亮？— 海水、運動飲料、糖水、酒精、油、蒸餾水都常考。— 對應第 10–15、22、29 題。</li>
+              <li><b>狀態題</b>：固體 NaCl vs 水溶液 vs 熔融 NaCl 誰能導電？— 對應第 14、15 題。</li>
+              <li><b>影響因素</b>：濃度升高、加熱、加糖、加更多鹽水會怎樣？— 對應第 16、17 題。</li>
+              <li><b>應用題</b>：電池、電鍍、電解水、TDS 計的原理。— 對應第 25–28、34 題。</li>
+              <li><b>安全題</b>：濕手、潮濕鹽分表面為什麼更容易觸電？— 對應第 13 題。</li>
+              <li><b>迷思澄清</b>：「水自己會導電」、「液體就會導電」哪個錯？— 對應第 49、50 題。</li>
+            </ol>
+            <p class="rv-tip">提示：答題時先判斷「有沒有可移動的離子」，再判斷「離子多不多」，多數題目都能秒選。</p>
+          </section>
+        </article>
+
+        <footer class="review-footer">
+          <button type="button" class="btn btn-primary" data-review-close>我準備好了，回去登入</button>
+        </footer>
+      </div>
     </div>
   </section>
 

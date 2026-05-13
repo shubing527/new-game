@@ -131,6 +131,138 @@ input { font-family: inherit; }
 
 .error { color: var(--warm-red); font-size: 13px; min-height: 1em; font-weight: 600; }
 
+/* Join actions row: 進入房間 + 溫習 */
+.join-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.join-actions > #btn-join { flex: 1 1 200px; }
+.btn-review {
+  flex: 0 1 130px;
+  background: var(--teal); color: #06212e;
+  box-shadow: 0 4px 0 #1a6f97, 0 6px 14px rgba(0,0,0,0.18);
+}
+.btn-review:hover { background: #5cc1e3; }
+
+/* =========================================================
+   REVIEW MODAL (溫習)
+   ========================================================= */
+.review-modal {
+  position: fixed; inset: 0; z-index: 60;
+  display: none;
+  align-items: stretch; justify-content: center;
+}
+.review-modal.show { display: flex; }
+.review-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(8,18,30,0.7);
+  backdrop-filter: blur(4px);
+}
+.low-motion .review-backdrop { backdrop-filter: none; background: rgba(8,18,30,0.85); }
+.review-shell {
+  position: relative;
+  margin: auto;
+  width: min(720px, 96vw);
+  max-height: 92vh; max-height: 92svh;
+  background: var(--paper);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.review-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 16px 20px 8px;
+  border-bottom: 1px solid rgba(20,35,58,0.08);
+}
+.review-title {
+  margin: 0; font-family: 'Clash Display', 'PingFang TC', sans-serif;
+  font-size: 20px; font-weight: 700; color: var(--ink);
+}
+.review-close {
+  background: rgba(20,35,58,0.06); border: none; border-radius: 50%;
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  color: var(--ink); cursor: pointer;
+}
+.review-close:hover { background: rgba(20,35,58,0.12); }
+.review-lead {
+  margin: 12px 20px 0;
+  font-size: 13px; color: rgba(20,35,58,0.7); line-height: 1.5;
+}
+.review-toc {
+  margin: 10px 20px 6px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.review-toc a {
+  font-size: 12px; font-weight: 700;
+  background: rgba(62,170,214,0.12); color: #155a7c;
+  padding: 4px 10px; border-radius: 999px;
+  text-decoration: none;
+}
+.review-toc a:hover { background: rgba(62,170,214,0.22); }
+.review-body {
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 10px 20px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.rv-card {
+  background: #fff;
+  border: 1px solid rgba(20,35,58,0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  scroll-margin-top: 12px;
+}
+.rv-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px; font-weight: 700; color: var(--ink);
+  font-family: 'Clash Display', 'PingFang TC', sans-serif;
+}
+.rv-card ul, .rv-card ol {
+  margin: 4px 0 0; padding-left: 20px;
+  font-size: 14px; line-height: 1.65; color: var(--ink);
+}
+.rv-card li { margin-bottom: 4px; }
+.rv-card b { color: #0f4068; }
+.rv-tip {
+  margin: 10px 0 0; padding: 8px 12px;
+  background: rgba(245,201,71,0.16);
+  border-left: 3px solid var(--warm-gold);
+  border-radius: 6px;
+  font-size: 13px; color: var(--ink); line-height: 1.5;
+}
+.rv-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; margin-top: 6px;
+}
+.rv-table th, .rv-table td {
+  border: 1px solid rgba(20,35,58,0.1);
+  padding: 6px 8px; vertical-align: top; text-align: left;
+}
+.rv-table th {
+  background: rgba(20,35,58,0.05);
+  font-weight: 700; color: var(--ink);
+}
+.rv-table .rv-yes { color: #1d8047; font-weight: 700; white-space: nowrap; }
+.rv-table .rv-no { color: var(--warm-red); font-weight: 700; white-space: nowrap; }
+.rv-table .rv-maybe { color: #b07c1a; font-weight: 700; white-space: nowrap; }
+.review-footer {
+  padding: 12px 20px 16px;
+  border-top: 1px solid rgba(20,35,58,0.08);
+  display: flex; justify-content: flex-end;
+  background: rgba(20,35,58,0.02);
+}
+.review-footer .btn { padding: 10px 18px; font-size: 14px; }
+
+@media (max-width: 560px) {
+  .review-shell { width: 100vw; max-height: 100vh; max-height: 100svh; border-radius: 0; }
+  .review-title { font-size: 18px; }
+  .review-lead { font-size: 12px; }
+  .rv-card { padding: 12px; }
+  .rv-card h3 { font-size: 15px; }
+  .rv-card ul, .rv-card ol { font-size: 13px; padding-left: 18px; }
+  .rv-table { font-size: 12px; }
+  .rv-table th, .rv-table td { padding: 5px 6px; }
+  .join-actions { flex-direction: column; }
+  .join-actions > .btn { width: 100%; }
+}
+
 .rules {
   list-style: none; padding: 0; margin: 4px 0 0;
   display: flex; flex-direction: column; gap: 6px;
